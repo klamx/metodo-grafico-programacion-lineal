@@ -45,6 +45,7 @@ export function useLinearProgram() {
   }, []);
 
   const solve = useCallback(() => {
+    // Convertir todos los valores a número antes de resolver
     const numericConstraints = constraints.map((c) => ({
       ...c,
       cx: Number(c.cx),

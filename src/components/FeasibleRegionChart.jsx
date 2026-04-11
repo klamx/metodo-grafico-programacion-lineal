@@ -19,9 +19,9 @@ const CONSTRAINT_COLORS = [
 const MARGIN = { top: 24, right: 48, bottom: 36, left: 48 };
 
 /**
- * Pure SVG chart — no Recharts dependency.
- * Renders a 4-quadrant coordinate system with constraint lines,
- * feasible region, vertices, and the optimal Z isoline.
+ * Gráfica SVG pura — sin dependencia de Recharts.
+ * Dibuja un sistema de coordenadas de 4 cuadrantes con las líneas
+ * de restricción, la región factible, los vértices y la isolínea Z óptima.
  */
 export default function FeasibleRegionChart({
   constraints,
@@ -32,7 +32,7 @@ export default function FeasibleRegionChart({
   const containerRef = useRef(null);
   const [size, setSize] = useState({ width: 600, height: 480 });
 
-  // Track container width
+  // Observar el ancho del contenedor para hacer la gráfica responsiva
   useEffect(() => {
     if (!containerRef.current) return;
     const ro = new ResizeObserver((entries) => {
@@ -48,15 +48,15 @@ export default function FeasibleRegionChart({
     [vertices]
   );
 
-  // Plot area in pixels
+  // Área de trazado en píxeles
   const plotW = size.width - MARGIN.left - MARGIN.right;
   const plotH = size.height - MARGIN.top - MARGIN.bottom;
 
-  // Data → pixel transforms
+  // Transformaciones dato → píxel
   const sx = (x) => ((x - xMin) / (xMax - xMin)) * plotW;
   const sy = (y) => plotH - ((y - yMin) / (yMax - yMin)) * plotH;
 
-  // Axis ticks
+  // Marcas de los ejes
   const xTicks = useMemo(() => buildTicks(xMin, xMax, 10), [xMin, xMax]);
   const yTicks = useMemo(() => buildTicks(yMin, yMax, 8), [yMin, yMax]);
 
@@ -122,7 +122,7 @@ export default function FeasibleRegionChart({
           {/* Translate everything by margin */}
           <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
 
-            {/* Grid lines */}
+            {/* Líneas de cuadrícula */}
             {xTicks.map((t) => (
               <line
                 key={`gx${t}`}
@@ -144,7 +144,7 @@ export default function FeasibleRegionChart({
               />
             ))}
 
-            {/* Feasible region polygon (clipped) */}
+            {/* Polígono de la región factible (recortado) */}
             {sortedVertices.length >= 3 && (
               <polygon
                 clipPath="url(#plot-clip)"
@@ -157,7 +157,7 @@ export default function FeasibleRegionChart({
               />
             )}
 
-            {/* Constraint lines (clipped) */}
+            {/* Líneas de restricción (recortadas) */}
             <g clipPath="url(#plot-clip)">
               {constraintLines.map((cl) =>
                 cl.points.length === 2 ? (
@@ -174,7 +174,7 @@ export default function FeasibleRegionChart({
                 ) : null
               )}
 
-              {/* Z isoline */}
+              {/* Isolínea Z óptima */}
               {zLine && zLine.length === 2 && (
                 <line
                   x1={sx(zLine[0].x)}
@@ -188,15 +188,15 @@ export default function FeasibleRegionChart({
               )}
             </g>
 
-            {/* Axes (on top of grid, behind labels) */}
-            {/* X axis */}
+            {/* Ejes (encima de la cuadrícula, debajo de las etiquetas) */}
+            {/* Eje X */}
             <line
               x1={0} y1={sy(0)}
               x2={plotW} y2={sy(0)}
               stroke="var(--text-secondary)"
               strokeWidth={1.5}
             />
-            {/* Y axis */}
+            {/* Eje Y */}
             <line
               x1={sx(0)} y1={0}
               x2={sx(0)} y2={plotH}
@@ -204,7 +204,7 @@ export default function FeasibleRegionChart({
               strokeWidth={1.5}
             />
 
-            {/* X tick marks and labels */}
+            {/* Marcas y etiquetas del eje X */}
             {xTicks.map((t) => (
               <g key={`xtick${t}`}>
                 <line
@@ -225,7 +225,7 @@ export default function FeasibleRegionChart({
               </g>
             ))}
 
-            {/* Y tick marks and labels */}
+            {/* Marcas y etiquetas del eje Y */}
             {yTicks.map((t) => (
               <g key={`ytick${t}`}>
                 <line
@@ -248,7 +248,7 @@ export default function FeasibleRegionChart({
               </g>
             ))}
 
-            {/* Axis labels */}
+            {/* Nombres de los ejes */}
             <text
               x={plotW - 4}
               y={sy(0) - 8}
@@ -269,7 +269,7 @@ export default function FeasibleRegionChart({
               y
             </text>
 
-            {/* Vertex dots and coordinate labels */}
+            {/* Puntos de vértice y etiquetas de coordenadas */}
             {vertices.map((v, i) => {
               const isOptimal =
                 optimalVertex &&
@@ -302,7 +302,7 @@ export default function FeasibleRegionChart({
         </svg>
       </div>
 
-      {/* Legend */}
+      {/* Leyenda */}
       <div className={styles.legend}>
         {constraintLines.map((cl, i) => (
           <div key={i} className={styles.legendItem}>
@@ -339,7 +339,7 @@ export default function FeasibleRegionChart({
   );
 }
 
-/** Generate ~n round tick values between min and max */
+/** Genera ~n valores de marca redondeados entre min y max */
 function buildTicks(min, max, targetCount) {
   const range = max - min;
   const rawStep = range / targetCount;
@@ -356,7 +356,7 @@ function buildTicks(min, max, targetCount) {
   const start = Math.ceil(min / step) * step;
   const ticks = [];
   for (let t = start; t <= max + 1e-10; t += step) {
-    ticks.push(Math.round(t * 1e9) / 1e9); // fix floating point
+    ticks.push(Math.round(t * 1e9) / 1e9); // corregir punto flotante
   }
   return ticks;
 }

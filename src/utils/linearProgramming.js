@@ -1,6 +1,6 @@
 /**
- * Evaluates a constraint: a*x + b*y <= c  |  >= c  |  = c
- * Returns true if point (x, y) satisfies the constraint.
+ * Evalúa una restricción: a*x + b*y <= c  |  >= c  |  = c
+ * Devuelve true si el punto (x, y) satisface la restricción.
  */
 export function satisfiesConstraint(constraint, x, y) {
   const { cx, cy, rhs, sign } = constraint;
@@ -12,10 +12,10 @@ export function satisfiesConstraint(constraint, x, y) {
 }
 
 /**
- * Solves a 2x2 linear system:
+ * Resuelve un sistema lineal 2x2:
  *   a1*x + b1*y = c1
  *   a2*x + b2*y = c2
- * Returns { x, y } or null if no unique solution.
+ * Devuelve { x, y } o null si no hay solución única.
  */
 export function solveLinearSystem(a1, b1, c1, a2, b2, c2) {
   const det = a1 * b2 - a2 * b1;
@@ -26,8 +26,8 @@ export function solveLinearSystem(a1, b1, c1, a2, b2, c2) {
 }
 
 /**
- * Converts a constraint to the form: a*x + b*y = c (its boundary line).
- * Also generates two boundary-axis-intersection lines from bound constraints.
+ * Convierte una restricción a la forma: a*x + b*y = c (su línea frontera).
+ * También genera las intersecciones con los ejes para restricciones de borde.
  */
 export function getConstraintLines(constraints) {
   return constraints.map((c) => ({
@@ -38,9 +38,9 @@ export function getConstraintLines(constraints) {
 }
 
 /**
- * Finds all candidate corner points (vertices) of the feasible region by
- * intersecting every pair of constraint boundary lines (including axis bounds).
- * Filters to keep only points that satisfy ALL constraints.
+ * Encuentra todos los vértices candidatos de la región factible intersectando
+ * cada par de líneas frontera de las restricciones.
+ * Filtra para conservar solo los puntos que satisfacen TODAS las restricciones.
  */
 export function findFeasibleVertices(constraints) {
   const lines = getConstraintLines(constraints);
@@ -58,14 +58,14 @@ export function findFeasibleVertices(constraints) {
     }
   }
 
-  // Also add origin
+  // Agregar el origen como candidato
   candidates.push({ x: 0, y: 0 });
 
   const vertices = candidates.filter((pt) =>
     constraints.every((c) => satisfiesConstraint(c, pt.x, pt.y))
   );
 
-  // Deduplicate by rounding to 6 decimals
+  // Eliminar duplicados redondeando a 6 decimales
   const seen = new Set();
   return vertices.filter((pt) => {
     const key = `${pt.x.toFixed(6)},${pt.y.toFixed(6)}`;
@@ -76,18 +76,18 @@ export function findFeasibleVertices(constraints) {
 }
 
 /**
- * Evaluates the objective function Z = cx*x + cy*y at a given vertex.
+ * Evalúa la función objetivo Z = cx*x + cy*y en un vértice dado.
  */
 export function evaluateObjective(objective, x, y) {
   return objective.cx * x + objective.cy * y;
 }
 
 /**
- * Solves the linear program:
- *   - finds feasible vertices
- *   - evaluates Z at each
- *   - picks optimal (max or min)
- * Returns { vertices, optimalVertex, optimalZ, feasible }
+ * Resuelve el programa lineal:
+ *   - encuentra los vértices factibles
+ *   - evalúa Z en cada uno
+ *   - elige el óptimo (máx o mín)
+ * Devuelve { vertices, optimalVertex, optimalZ, feasible }
  */
 export function solveLinearProgram(objective, constraints) {
   if (constraints.length < 2) {
@@ -119,8 +119,8 @@ export function solveLinearProgram(objective, constraints) {
 }
 
 /**
- * Computes a nice axis range for the chart that accommodates all vertices
- * and shows the 4 quadrants if needed.
+ * Calcula un rango de ejes adecuado para la gráfica que incluye todos los
+ * vértices y muestra los 4 cuadrantes si es necesario.
  */
 export function computeAxisRange(vertices, padding = 2) {
   if (vertices.length === 0) return { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
@@ -137,21 +137,21 @@ export function computeAxisRange(vertices, padding = 2) {
 }
 
 /**
- * Samples points along a constraint line within the visible axis range.
- * Returns two endpoints that span the visible area.
+ * Calcula dos puntos extremos de la línea frontera de una restricción
+ * dentro del rango visible de los ejes.
  */
 export function getConstraintLinePoints(constraint, xMin, xMax, yMin, yMax) {
   const { cx, cy, rhs } = constraint;
   const points = [];
 
-  // If cy != 0, compute y from x at xMin and xMax
+  // Si cy != 0, calcular y a partir de x en xMin y xMax
   if (Math.abs(cy) > 1e-10) {
     const y1 = (rhs - cx * xMin) / cy;
     const y2 = (rhs - cx * xMax) / cy;
     points.push({ x: xMin, y: y1 });
     points.push({ x: xMax, y: y2 });
   } else if (Math.abs(cx) > 1e-10) {
-    // Vertical line x = rhs/cx
+    // Línea vertical x = rhs/cx
     const xVal = rhs / cx;
     points.push({ x: xVal, y: yMin });
     points.push({ x: xVal, y: yMax });
@@ -161,7 +161,8 @@ export function getConstraintLinePoints(constraint, xMin, xMax, yMin, yMax) {
 }
 
 /**
- * Sorts vertices in convex hull order (counter-clockwise) for polygon rendering.
+ * Ordena los vértices en sentido antihorario (envolvente convexa) para
+ * dibujar el polígono de la región factible.
  */
 export function sortVerticesConvex(vertices) {
   if (vertices.length < 3) return vertices;
