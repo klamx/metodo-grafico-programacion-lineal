@@ -32,20 +32,17 @@ export default function App() {
       </header>
 
       <main className={styles.main}>
-        {/* Left column: inputs */}
         <aside className={styles.sidebar}>
           <ObjectiveFunctionForm
             objective={objective}
             onUpdate={updateObjective}
           />
-
           <ConstraintsForm
             constraints={constraints}
             onAdd={addConstraint}
             onUpdate={updateConstraint}
             onRemove={removeConstraint}
           />
-
           <div className={styles.actions}>
             <button className={styles.solveBtn} onClick={solve}>
               ▶ Resolver
@@ -56,7 +53,6 @@ export default function App() {
           </div>
         </aside>
 
-        {/* Right column: results */}
         <section className={styles.results}>
           {solved && result && (
             <OptimalSolution result={result} objective={numericObjective} />
