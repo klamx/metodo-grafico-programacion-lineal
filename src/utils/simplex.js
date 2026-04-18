@@ -1,18 +1,18 @@
 /**
- * Simplex Method solver with full tableau tracking.
- * Handles maximization and minimization (converts min → max).
- * Supports <= constraints (adds slack), >= (subtracts surplus + adds artificial), = (adds artificial).
- * Uses Big-M method for artificial variables.
+ * Solucionador del Método Simplex con seguimiento completo del tableau.
+ * Maneja maximización y minimización (convierte min → max internamente).
+ * Soporta restricciones <= (agrega holgura), >= (resta exceso + agrega artificial), = (agrega artificial).
+ * Usa el método de la Gran M para variables artificiales.
  *
- * objective: { type: "max"|"min", coefficients: number[] }
- * constraints: { coefficients: number[], sign: "<="|">="|"=", rhs: number }[]
- * decisionVarNames: string[] (e.g. ["x1","x2","x3"]) — optional, defaults to x1..xn
+ * objetivo: { type: "max"|"min", coefficients: number[] }
+ * restricciones: { coefficients: number[], sign: "<="|">="|"=", rhs: number }[]
+ * decisionVarNames: string[] (ej. ["x1","x2","x3"]) — opcional, por defecto x1..xn
  */
 
 const BIG_M = 1e6;
 
 /**
- * Build initial simplex tableau.
+ * Construye el tableau inicial del simplex.
  */
 export function buildTableau(objective, constraints, decisionVarNames) {
   const numDecision = objective.coefficients.length;
@@ -75,15 +75,18 @@ export function buildTableau(objective, constraints, decisionVarNames) {
   const isMax = objective.type === "max";
   const zRow = new Array(numCols).fill(0);
   objective.coefficients.forEach((coef, j) => {
+    // Negamos los coeficientes para maximización: el óptimo se alcanza cuando no haya negativos en la fila Z
     zRow[j] = isMax ? -coef : coef;
   });
 
+  // Penalización Gran M para variables artificiales
   const artificialStart = numDecision + slackCount + surplusCount;
   for (let i = artificialStart; i < totalVars; i++) {
     zRow[i] = BIG_M;
   }
   tableau.push(zRow);
 
+  // Eliminar artificiales de la fila Z: hacer cero los coeficientes de las variables básicas artificiales
   basicVars.forEach((bv, i) => {
     if (bv >= artificialStart) {
       const coeff = tableau[tableau.length - 1][bv];
@@ -99,8 +102,8 @@ export function buildTableau(objective, constraints, decisionVarNames) {
 }
 
 /**
- * Find pivot column: most negative coefficient in Z row.
- * Returns index or -1 if optimal.
+ * Busca la columna pivote: el coeficiente más negativo en la fila Z.
+ * Retorna el índice o -1 si ya se alcanzó el óptimo.
  */
 function findPivotCol(zRow) {
   let minVal = -1e-9;
@@ -115,11 +118,11 @@ function findPivotCol(zRow) {
 }
 
 /**
- * Find pivot row: minimum ratio test.
- * Returns index or -1 if unbounded.
+ * Busca la fila pivote: prueba de razón mínima.
+ * Retorna el índice o -1 si el problema es no acotado.
  */
 function findPivotRow(tableau, pivotCol) {
-  const numRows = tableau.length - 1; // exclude Z row
+  const numRows = tableau.length - 1; // excluye la fila Z
   let minRatio = Infinity;
   let row = -1;
   for (let i = 0; i < numRows; i++) {
@@ -136,18 +139,18 @@ function findPivotRow(tableau, pivotCol) {
 }
 
 /**
- * Perform pivot operation. Mutates tableau in place.
+ * Realiza la operación de pivoteo. Modifica el tableau en su lugar (eliminación gaussiana).
  */
 function pivot(tableau, pivotRow, pivotCol) {
   const numCols = tableau[0].length;
   const pivotElem = tableau[pivotRow][pivotCol];
 
-  // Normalize pivot row
+  // Normalizar la fila pivote para que el elemento pivote quede en 1
   for (let j = 0; j < numCols; j++) {
     tableau[pivotRow][j] /= pivotElem;
   }
 
-  // Eliminate pivot column in all other rows
+  // Eliminar la columna pivote en todas las demás filas (poner en 0)
   for (let i = 0; i < tableau.length; i++) {
     if (i === pivotRow) continue;
     const factor = tableau[i][pivotCol];
@@ -159,17 +162,18 @@ function pivot(tableau, pivotRow, pivotCol) {
 }
 
 /**
- * Deep copy 2D array.
+ * Copia profunda de un arreglo 2D.
  */
 function copyTableau(t) {
   return t.map((row) => [...row]);
 }
 
 /**
- * Solve LP using simplex. Returns { iterations, status, optimalZ, variables }
- * objective: { type, coefficients }
- * constraints: [{ coefficients, sign, rhs }]
- * decisionVarNames: optional string[]
+ * Resuelve el problema de programación lineal usando el Método Simplex.
+ * Retorna { iterations, status, optimalZ, variables }
+ * objetivo: { type, coefficients }
+ * restricciones: [{ coefficients, sign, rhs }]
+ * decisionVarNames: string[] opcional
  */
 export function solveSimplex(objective, constraints, decisionVarNames) {
   if (constraints.length === 0) {
@@ -183,7 +187,7 @@ export function solveSimplex(objective, constraints, decisionVarNames) {
   const isMax = objective.type === "max";
   const artificialStart = numDecision + slackCount + surplusCount;
 
-  // Initial tableau snapshot
+  // Guardar snapshot del tableau inicial
   iterations.push({
     tableau: copyTableau(tableau),
     basicVars: [...basicVars],
@@ -197,20 +201,21 @@ export function solveSimplex(objective, constraints, decisionVarNames) {
   for (let iter = 0; iter < MAX_ITER; iter++) {
     const zRow = tableau[tableau.length - 1];
     const pivotCol = findPivotCol(zRow);
-    if (pivotCol === -1) break; // optimal
+    if (pivotCol === -1) break; // se alcanzó el óptimo
 
     const pivotRow = findPivotRow(tableau, pivotCol);
     if (pivotRow === -1) {
       return { status: "unbounded", iterations, optimalZ: null, variables: null };
     }
 
-    // Record before pivot
+    // Registrar qué variable entra y cuál sale antes de pivotar
     const enteringVar = varNames[pivotCol];
     const leavingVar = varNames[basicVars[pivotRow]];
 
     pivot(tableau, pivotRow, pivotCol);
     basicVars[pivotRow] = pivotCol;
 
+    // Guardar snapshot después del pivote
     iterations.push({
       tableau: copyTableau(tableau),
       basicVars: [...basicVars],
@@ -221,7 +226,7 @@ export function solveSimplex(objective, constraints, decisionVarNames) {
     });
   }
 
-  // Check feasibility: if any artificial is basic with value > epsilon, infeasible
+  // Verificar factibilidad: si alguna artificial sigue en la base con valor > epsilon, no hay solución
   const numRows = tableau.length - 1;
   for (let i = 0; i < numRows; i++) {
     if (basicVars[i] >= artificialStart) {
@@ -232,15 +237,16 @@ export function solveSimplex(objective, constraints, decisionVarNames) {
     }
   }
 
-  // Extract solution
-  // Z[RHS] accumulates the actual objective value after pivoting.
-  // For max: zRow was set with -coef, so Z[RHS] = +obj_value.
-  // For min: zRow was set with +coef (negated obj), so Z[RHS] = -obj_value.
+  // Extraer la solución.
+  // Z[RHS] acumula el valor real del objetivo tras los pivotes.
+  // Para max: la fila Z se inicializó con -coef, por lo que Z[RHS] = +valor_objetivo.
+  // Para min: se usó +coef (objetivo negado), por lo que Z[RHS] = -valor_objetivo → se niega al final.
   const rawZ = tableau[tableau.length - 1][numCols - 1];
   const optimalZ = isMax ? rawZ : -rawZ;
 
+  // Las variables no básicas valen 0; las básicas toman el valor del RHS de su fila
   const variables = {};
-  varNames.forEach((name, idx) => {
+  varNames.forEach((name) => {
     variables[name] = 0;
   });
   for (let i = 0; i < numRows; i++) {
