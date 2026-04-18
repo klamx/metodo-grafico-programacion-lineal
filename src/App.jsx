@@ -1,79 +1,64 @@
-import { useLinearProgram } from "./hooks/useLinearProgram";
-import ObjectiveFunctionForm from "./components/ObjectiveFunctionForm";
-import ConstraintsForm from "./components/ConstraintsForm";
-import FeasibleRegionChart from "./components/FeasibleRegionChart";
-import VerticesTable from "./components/VerticesTable";
-import OptimalSolution from "./components/OptimalSolution";
+import { BrowserRouter, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import GraphicPage from "./pages/GraphicPage";
+import SimplexPage from "./pages/SimplexPage";
 import styles from "./App.module.css";
 
-export default function App() {
-  const {
-    objective,
-    constraints,
-    solved,
-    result,
-    numericConstraints,
-    numericObjective,
-    updateObjective,
-    addConstraint,
-    updateConstraint,
-    removeConstraint,
-    solve,
-    reset,
-  } = useLinearProgram();
+const METHOD_LABELS = {
+  "/grafico": "Método Gráfico",
+  "/simplex": "Método Simplex",
+};
+
+function Header() {
+  const location = useLocation();
+  const methodLabel = METHOD_LABELS[location.pathname];
 
   return (
-    <div className={styles.app}>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.title}>Programación Lineal</h1>
-          <p className={styles.subtitle}>Método Gráfico</p>
-        </div>
-      </header>
+    <header className={styles.header}>
+      <div className={styles.headerContent}>
+        <NavLink to="/" className={styles.brand}>
+          Programación Lineal
+        </NavLink>
+        {methodLabel && (
+          <>
+            <span className={styles.separator}>/</span>
+            <span className={styles.methodLabel}>{methodLabel}</span>
+          </>
+        )}
+        <nav className={styles.nav}>
+          <NavLink
+            to="/grafico"
+            className={({ isActive }) =>
+              `${styles.navLink} ${isActive ? styles.navActive : ""}`
+            }
+          >
+            📈 Gráfico
+          </NavLink>
+          <NavLink
+            to="/simplex"
+            className={({ isActive }) =>
+              `${styles.navLink} ${isActive ? styles.navActive : ""}`
+            }
+          >
+            🔢 Simplex
+          </NavLink>
+        </nav>
+      </div>
+    </header>
+  );
+}
 
-      <main className={styles.main}>
-        <aside className={styles.sidebar}>
-          <ObjectiveFunctionForm
-            objective={objective}
-            onUpdate={updateObjective}
-          />
-          <ConstraintsForm
-            constraints={constraints}
-            onAdd={addConstraint}
-            onUpdate={updateConstraint}
-            onRemove={removeConstraint}
-          />
-          <div className={styles.actions}>
-            <button className={styles.solveBtn} onClick={solve}>
-              ▶ Resolver
-            </button>
-            <button className={styles.resetBtn} onClick={reset}>
-              ↺ Resetear
-            </button>
-          </div>
-        </aside>
-
-        <section className={styles.results}>
-          {solved && result && (
-            <OptimalSolution result={result} objective={numericObjective} />
-          )}
-
-          <FeasibleRegionChart
-            constraints={numericConstraints}
-            vertices={solved && result?.feasible ? result.vertices : []}
-            optimalVertex={solved && result?.feasible ? result.optimalVertex : null}
-            objective={numericObjective}
-          />
-
-          {solved && result?.feasible && (
-            <VerticesTable
-              vertices={result.vertices}
-              optimalVertex={result.optimalVertex}
-              objectiveType={numericObjective.type}
-            />
-          )}
-        </section>
-      </main>
-    </div>
+export default function App() {
+  return (
+    <BrowserRouter>
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/grafico" element={<GraphicPage />} />
+          <Route path="/simplex" element={<SimplexPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }

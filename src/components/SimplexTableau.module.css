@@ -1,0 +1,312 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.infeasible {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+  color: #fff;
+  border: none;
+}
+
+.statusTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.statusMsg {
+  font-size: 0.88rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.cardHeader {
+  padding: 1.25rem 1.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.iterCount {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.iterations {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* --- Individual iteration --- */
+.iteration {
+  border-bottom: 1px solid var(--border);
+}
+
+.iteration:last-child {
+  border-bottom: none;
+}
+
+.optimalIter .iterHeader {
+  background: color-mix(in srgb, #065f46 8%, var(--surface));
+}
+
+.iterHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: var(--surface);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  gap: 0.5rem;
+}
+
+.iterHeader:hover {
+  background: var(--bg);
+}
+
+.iterLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.iterLabel {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.zBadge {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.chevron {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* --- Iteration body --- */
+.iterBody {
+  padding: 0.75rem 1.25rem 1rem;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.opNote {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.opDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.opText {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* --- Tableau table --- */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 100%;
+}
+
+.th {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.td {
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+  text-align: center;
+  color: var(--text-primary);
+  background: var(--surface);
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.baseCell {
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-light) !important;
+  text-align: left;
+  font-family: inherit;
+}
+
+.rhsCell {
+  font-weight: 700;
+}
+
+/* Pivot highlights */
+.pivotRow td {
+  background: color-mix(in srgb, #059669 12%, var(--surface)) !important;
+}
+
+.pivotCol {
+  background: color-mix(in srgb, #3b82f6 10%, var(--surface)) !important;
+}
+
+.pivotElem {
+  background: #059669 !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.artificialCol {
+  opacity: 0.65;
+}
+
+/* Z row */
+.zRowTr td {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface)) !important;
+  font-weight: 600;
+}
+
+.zCell {
+  color: var(--accent);
+}
+
+/* Basic vars badges */
+.basicVars {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.basicLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.basicBadge {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.artificialBadge {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+/* --- Summary bar --- */
+.summary {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.summaryItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-right: 1px solid var(--border);
+  gap: 0.4rem;
+}
+
+.summaryItem:last-child {
+  border-right: none;
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.summaryValue {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: monospace;
+}
+
+.summaryBadge {
+  border-radius: 20px;
+  padding: 0.25rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.optimalBadge {
+  background: linear-gradient(135deg, #065f46, #047857);
+  color: #fff;
+}
