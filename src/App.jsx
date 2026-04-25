@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route, NavLink, useLocation } from "react-router
 import HomePage from "./pages/HomePage";
 import GraphicPage from "./pages/GraphicPage";
 import SimplexPage from "./pages/SimplexPage";
+import DualSimplexPage from "./pages/DualSimplexPage";
 import styles from "./App.module.css";
 
 const METHOD_LABELS = {
   "/grafico": "Método Gráfico",
   "/simplex": "Método Simplex",
+  "/simplex-dual": "Simplex Dual",
 };
 
 function Header() {
@@ -42,6 +44,14 @@ function Header() {
           >
             🔢 Simplex
           </NavLink>
+          <NavLink
+            to="/simplex-dual"
+            className={({ isActive }) =>
+              `${styles.navLink} ${isActive ? styles.navActive : ""}`
+            }
+          >
+            🔄 Dual
+          </NavLink>
         </nav>
       </div>
     </header>
@@ -57,6 +67,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/grafico" element={<GraphicPage />} />
           <Route path="/simplex" element={<SimplexPage />} />
+          <Route path="/simplex-dual" element={<DualSimplexPage />} />
         </Routes>
       </div>
     </BrowserRouter>

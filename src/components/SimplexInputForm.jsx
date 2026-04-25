@@ -9,6 +9,8 @@ export default function SimplexInputForm({
   onSolve,
   onReset,
   onLoadExample,
+  solveLabel = "📊 Resolver con Simplex",
+  constraintsHint,
 }) {
   return (
     <div className={styles.card}>
@@ -53,7 +55,7 @@ export default function SimplexInputForm({
             rows={7}
             spellCheck={false}
           />
-          <p className={styles.hint}>ℹ️ Operadores válidos: &lt;=, &gt;=, =</p>
+          <p className={styles.hint}>ℹ️ {constraintsHint ?? "Operadores válidos: <=, >=, ="}</p>
         </div>
 
         {/* Parse errors */}
@@ -67,7 +69,7 @@ export default function SimplexInputForm({
 
         {/* Solve button */}
         <button className={styles.solveBtn} onClick={onSolve}>
-          📊 Resolver con Simplex
+          {solveLabel}
         </button>
 
         {/* Secondary actions */}

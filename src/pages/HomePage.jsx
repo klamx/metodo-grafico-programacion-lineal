@@ -18,6 +18,14 @@ const METHODS = [
       "Algoritmo iterativo para n variables. Muestra el tableau completo paso a paso con variables básicas y pivotes.",
     tags: ["n variables", "Tableau", "Iterativo"],
   },
+  {
+    path: "/simplex-dual",
+    icon: "🔄",
+    title: "Simplex Dual",
+    description:
+      "Parte de una base dual factible con RHS negativos. Ideal para minimización con restricciones >=. Sin variables artificiales.",
+    tags: ["Dual factible", ">=", "Minimización"],
+  },
 ];
 
 export default function HomePage() {
